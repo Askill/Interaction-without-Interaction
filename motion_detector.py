@@ -33,11 +33,9 @@ ap.add_argument("-amin", "--min-area", type=int, default=3000, help="minimum are
 ap.add_argument("-amax", "--max-area", type=int, default=10000, help="minimum area size")
 args = vars(ap.parse_args())
 
-time.sleep(5)
-
 # if the video argument is None, then we are reading from webcam
 args["video"] = "http://192.168.178.53:8000/stream.mjpg"
-#args["video"] = "./videos/example_02.mp4"
+args["video"] = "./videos/example_02.mp4"
 vs = cv2.VideoCapture(args["video"])
 counter = 0
 threashold = 50

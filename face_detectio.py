@@ -35,7 +35,7 @@ while True:
         face_image = frame[top:bottom, left:right]
 
         # Blur the face image
-        face_image = cv2.GaussianBlur(face_image, (99, 99), 30)
+        face_image = cv2.GaussianBlur(face_image, (9, 9), 30)
 
         # Put the blurred face region back into the frame image
         frame[top:bottom, left:right] = face_image
