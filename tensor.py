@@ -64,11 +64,12 @@ if __name__ == "__main__":
     model_path = "C:/Users/John/Desktop/ster_rcnn_inception_v2_coco_2018_01_28/ster_rcnn_inception_v2_coco_2018_01_28/ozen_inference_graph.pb"
     odapi = DetectorAPI(path_to_ckpt=model_path)
     threshold = 0.3
-    cap = cv2.VideoCapture("./videos/example_02.mp4")
+    
 
     while True:
+        cap = cv2.VideoCapture("http://69.254.67.229:8081/mjpg/video.mjpg")
         r, img = cap.read()
-        img = cv2.resize(img, (720, 720))
+        img = cv2.resize(img, (500, 500))
 
         boxes, scores, classes, num = odapi.processFrame(img)
 
@@ -76,12 +77,13 @@ if __name__ == "__main__":
 
         for i in range(len(boxes)):
             # Class 1 represents human
-            if classes[i] == 1 and scores[i] > threshold:
-                box = boxes[i]
-                cv2.rectangle(img,(box[1],box[0]),(box[3],box[2]),(255,0,0),2)
-                requests.get("http://192.168.178.53/play")
-            else:
-                requests.get("http://192.168.178.53/stop")
+            if classes[i] == 1:
+                if  scores[i] > threshold:
+                    box = boxes[i]
+                    cv2.rectangle(img,(box[1],box[0]),(box[3],box[2]),(255,0,0),2)
+                    requests.get("http://192.168.178.53/play")
+                else:
+                    requests.get("http://192.168.178.53/stop")
 
         cv2.imshow("preview", img)
         key = cv2.waitKey(1)
