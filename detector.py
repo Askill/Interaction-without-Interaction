@@ -5,8 +5,6 @@
 import numpy as np
 import tensorflow as tf
 import cv2
-import time
-import requests
 
 
 class DetectorAPI:
@@ -38,21 +36,20 @@ class DetectorAPI:
         # Expand dimensions since the trained_model expects images to have shape: [1, None, None, 3]
         image_np_expanded = np.expand_dims(image, axis=0)
         # Actual detection.
-        start_time = time.time()
+
         (boxes, scores, classes, num) = self.sess.run(
             [self.detection_boxes, self.detection_scores, self.detection_classes, self.num_detections],
             feed_dict={self.image_tensor: image_np_expanded})
-        end_time = time.time()
-
-        print("Elapsed Time:", end_time-start_time)
 
         im_height, im_width,_ = image.shape
         boxes_list = [None for i in range(boxes.shape[1])]
         for i in range(boxes.shape[1]):
-            boxes_list[i] = (int(boxes[0,i,0] * im_height),
-                        int(boxes[0,i,1]*im_width),
-                        int(boxes[0,i,2] * im_height),
-                        int(boxes[0,i,3]*im_width))
+            boxes_list[i] = (
+                int(boxes[0,i,0] * im_height),
+                int(boxes[0,i,1] * im_width),
+                int(boxes[0,i,2] * im_height),
+                int(boxes[0,i,3] * im_width)
+            )
 
         return boxes_list, scores[0].tolist(), [int(x) for x in classes[0].tolist()], int(num[0])
 
@@ -60,32 +57,38 @@ class DetectorAPI:
         self.sess.close()
         self.default_graph.close()
 
-if __name__ == "__main__":
-    model_path = "C:/Users/John/Desktop/ster_rcnn_inception_v2_coco_2018_01_28/ster_rcnn_inception_v2_coco_2018_01_28/ozen_inference_graph.pb"
-    odapi = DetectorAPI(path_to_ckpt=model_path)
-    threshold = 0.3
-    
 
-    while True:
-        cap = cv2.VideoCapture("http://69.254.67.229:8081/mjpg/video.mjpg")
+class Detector:
+    def __init__(self, stream):
+        self.model_path = "./model.pb"
+        self.odapi = DetectorAPI(path_to_ckpt=self.model_path)
+        self.threshold = 0.3
+        self.stream = stream
+       
+
+    def detect(self):
+        cap = cv2.VideoCapture(self.stream)
         r, img = cap.read()
         img = cv2.resize(img, (500, 500))
 
-        boxes, scores, classes, num = odapi.processFrame(img)
+        boxes, scores, classes, num = self.odapi.processFrame(img)
 
         # Visualization of the results of a detection.
 
         for i in range(len(boxes)):
             # Class 1 represents human
             if classes[i] == 1:
-                if  scores[i] > threshold:
+                if scores[i] > self.threshold:
                     box = boxes[i]
                     cv2.rectangle(img,(box[1],box[0]),(box[3],box[2]),(255,0,0),2)
-                    requests.get("http://192.168.178.53/play")
+                    print("yes")
+                    return True, img
                 else:
-                    requests.get("http://192.168.178.53/stop")
-
-        cv2.imshow("preview", img)
-        key = cv2.waitKey(1)
-        if key & 0xFF == ord('q'):
-            break
+                    print("no")
+                    
+                    return False, img
+            cv2.imshow("preview", img) # cv2.destroyWindow("preview")
+            
+    def __del__(self):
+        self.cap.release()
+        cv2.destroyAllWindows()
