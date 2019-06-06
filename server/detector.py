@@ -60,7 +60,7 @@ class DetectorAPI:
 
 class Detector:
     def __init__(self, stream):
-        self.model_path = "./model.pb"
+        self.model_path = "./server/model.pb"
         self.odapi = DetectorAPI(path_to_ckpt=self.model_path)
         self.threshold = 0.8
         self.stream = stream
