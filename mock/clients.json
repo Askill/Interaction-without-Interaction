@@ -1,0 +1,20 @@
+[
+    {
+      "id": 0,
+      "label": "name1",
+      "ip": "127.0.0.1",
+      "status": true
+    },
+    {
+      "id": 1,
+      "label": "name2",
+      "ip": "127.0.0.1",
+      "status": false
+    },
+    {
+      "id": 2,
+      "label": "name3",
+      "ip": "127.0.0.1",
+      "status": true
+    }
+]

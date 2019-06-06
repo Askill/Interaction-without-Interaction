@@ -62,15 +62,17 @@ class Detector:
     def __init__(self, stream):
         self.model_path = "./model.pb"
         self.odapi = DetectorAPI(path_to_ckpt=self.model_path)
-        self.threshold = 0.3
+        self.threshold = 0.8
         self.stream = stream
        
 
     def detect(self):
         cap = cv2.VideoCapture(self.stream)
         r, img = cap.read()
-        img = cv2.resize(img, (500, 500))
-
+        if img is None:
+            return img
+        img = cv2.resize(img, (480, 270))
+       
         boxes, scores, classes, num = self.odapi.processFrame(img)
 
         # Visualization of the results of a detection.
@@ -82,13 +84,15 @@ class Detector:
                     box = boxes[i]
                     cv2.rectangle(img,(box[1],box[0]),(box[3],box[2]),(255,0,0),2)
                     print("yes")
-                    return True, img
+                    
+                    return img
                 else:
                     print("no")
                     
-                    return False, img
-            cv2.imshow("preview", img) # cv2.destroyWindow("preview")
+                    return img
+           # cv2.imshow("preeview", img) # cv2.destroyWindow("preview")
             
     def __del__(self):
         self.cap.release()
         cv2.destroyAllWindows()
+        requests.get("http://192.168.178.53/stop")
