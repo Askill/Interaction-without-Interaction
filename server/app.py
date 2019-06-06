@@ -47,17 +47,18 @@ def gen(camera):
 #########           ###########
 
 def main():
-    for cam in cams:
-        t = 1  # seconds a person can leave the room for
-        t0 = time.time()
-        time.clock()    
-        elapsed = 0
-        stream = cam["ip"]
-        detector = dt.Detector(stream)
-        music_playing = client_ip = clients[cam["client_id"]]["status"]
-        client_ip = "http://" + clients[cam["client_id"]]["ip"]
+    while True:
+        for cam in cams:
+            t = 1  # seconds a person can leave the room for
+            t0 = time.time()
+            time.clock()    
+            elapsed = 0
+            stream = cam["ip"]
+            detector = dt.Detector(stream)
+            music_playing = client_ip = clients[cam["client_id"]]["status"]
+            client_ip = "http://" + clients[cam["client_id"]]["ip"]
 
-        while True:
+        
             elapsed = time.time() - t0
             if elapsed > t and music_playing:
                 r = requests.get(client_ip + "/stop")
