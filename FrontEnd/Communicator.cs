@@ -21,7 +21,7 @@ namespace FrontEnd
 
         override public string ToString()
         {
-            return $"Id: {Id}, Label: {Label}, Status {Status}\n" +
+            return $"Id: {Id}, Label: {Label}, Status: {Status}\n" +
                    $"ClientID: {Client_Id}, Ip : {Ip}\n" +
                    $"X: {X}  Y: {Y}  Angle: {Angle}";
         }
@@ -38,7 +38,7 @@ namespace FrontEnd
 
         override public string ToString()
         {
-            return $"Id: {Id}, Label: {Label}, Status {Status}\n" +
+            return $"Id: {Id}, Label: {Label}, Status: {Status}\n" +
                    $"Ip : {Ip}\n" +
                    $"X: {X}  Y: {Y}";
         }
