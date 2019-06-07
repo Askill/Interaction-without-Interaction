@@ -1,0 +1,4 @@
+
+*.csproj
+
+FrontEnd/packages\.config
