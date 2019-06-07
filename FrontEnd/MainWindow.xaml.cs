@@ -59,7 +59,7 @@ namespace FrontEnd
                 Fill = client.Status ? Brushes.Green : Brushes.Red,
                 Stroke = Brushes.Black,
                 StrokeThickness = 1,
-                ToolTip =  client.Label
+                ToolTip = client.Label
             };
 
             cnvMap.Children.Add(ellipse);
@@ -70,6 +70,23 @@ namespace FrontEnd
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadInformation();
+            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
+            dispatcherTimer.Start();
+        }
+
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            var selectedItem = (ListBoxItem)lstDevices.SelectedItem;
+            if (selectedItem != null)
+            {
+                var newSelection = from ListBoxItem item in lstDevices.Items
+                                   where selectedItem.Content.Equals(item.Content)
+                                   select item;
+                if (newSelection.Any())
+                    lstDevices.SelectedItem = newSelection.First();
+            }
         }
 
         private void LoadInformation()
