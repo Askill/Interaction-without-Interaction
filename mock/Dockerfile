@@ -11,4 +11,5 @@ COPY ./ /app
 WORKDIR /app
 EXPOSE 5000
 
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app"]
+
+CMD ["gunicorn", "-b", "0.0.0.0:5000","--worker-class", "gthread", "-w","4", "--threads", "100",  "app"]
