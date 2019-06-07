@@ -1,10 +1,12 @@
+import io
 import json
 import time
 import requests
 import detector as dt
 import cv2
 import _thread
-from flask import Flask, jsonify, Response
+import copy
+from flask import Flask, jsonify, Response, make_response, send_file
 
 #########           ###########
 ###         Init            ###
@@ -14,13 +16,12 @@ application = Flask(__name__)
 
 clients = []
 cams = []
-with open("./server/clients.json",  'r', encoding='utf-8') as f:
-    array = f.read()
-    clients = json.loads(array)
+lastImages = list(range(0,4))
+with open("./server/clients.json", 'r', encoding='utf-8') as f:
+    clients = json.loads(f.read())
 
-with open("./server/cams.json",  'r', encoding='utf-8') as f:
-    array = f.read()
-    cams = json.loads(array)
+with open("./server/cams.json", 'r', encoding='utf-8') as f:
+    cams = json.loads(f.read())
 
 class VideoCamera(object):
     """Video stream object"""
@@ -55,26 +56,34 @@ def main():
             elapsed = 0
             stream = cam["ip"]
             detector = dt.Detector(stream)
-            music_playing = client_ip = clients[cam["client_id"]]["status"]
-            client_ip = "http://" + clients[cam["client_id"]]["ip"]
+            clientStatus = clients[cam["client_id"]]["status"]
+            clientIp = clients[cam["client_id"]]["ip"]
 
-        
             elapsed = time.time() - t0
-            if elapsed > t and music_playing:
-                r = requests.get(client_ip + "/stop")
-                if r.status_code == 200:
+            if elapsed > t and clientStatus:
+                try:    
+                    #r = requests.get(clientIp + "/stop")
+                    #if r.status_code == 200:
                     clients[cam["client_id"]]["status"] = False
+                    cam["status"] = False
+                except:
+                    print("request error")
+
             tmp = time.time()
-            img = detector.detect()
-            print(time.time()-tmp)
-            if img is not None and not music_playing:
-                r = requests.get(client_ip + "/play")
-                if r.status_code == 200:
+            img, result = detector.detect() 
+            print(cam["client_id"], result, time.time()-tmp)
+            lastImages[cam["id"]] = img
+
+            if result and not clientStatus:
+                try:      
+                    #r = requests.get(clientIp + "/play")
+                    #if r.status_code == 200:
                     clients[cam["client_id"]]["status"] = True
+                    cam["status"] = True
                     t0 = time.time()
-            # TODO noch nicht sicher wie ich das verarbeirtete Bild ausgebe 
-            #cv2.imshow("preview", img)
-            #cv2.waitKey(1)
+                except:
+                    print("request error")
+
 
 #########           ###########
 ###         Routes          ###
@@ -82,28 +91,28 @@ def main():
 
 @application.route('/client/')
 def client_list():
-    json = clients
-    return jsonify(json)
+    return jsonify(clients)
 
 @application.route('/client/<num>/info')
 def client_info(num):
-    json = clients[int(num)]
-    return jsonify(json)
+    return jsonify(clients[int(num)])
 
 @application.route('/cam/')
 def cam_list():
-    json = cams
-    return jsonify(json)
+    return jsonify(cams)
 
 @application.route('/cam/<num>/info')
 def cam_info(num):
-    json = cams[int(num)]
-    return jsonify(json)
+    return jsonify(cams[int(num)])
 
 @application.route('/cam/<num>/stream')
 def cam_stream(num):
-    return Response(gen(VideoCamera(cams[int(num)]["ip"])),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(gen(VideoCamera(cams[int(num)]["ip"])), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@application.route('/cam/<num>/processed')
+def cam_stream_processed(num):
+    frame = cv2.imencode('.jpg', lastImages[int(num)])[1]
+    return send_file(io.BytesIO(frame), mimetype='image/jpeg')
 
 
 #########           ###########
@@ -114,5 +123,4 @@ if __name__ == '__main__':
 
     _thread.start_new_thread(main, () )
 
-
-    application.run(host='127.0.0.1', port=80, threaded=True)
+    application.run(host='0.0.0.0', port=5000, threaded=True)

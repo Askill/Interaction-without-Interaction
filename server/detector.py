@@ -32,7 +32,7 @@ class DetectorAPI:
         self.detection_classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
         self.num_detections = self.detection_graph.get_tensor_by_name('num_detections:0')
 
-    def processFrame(self, image):
+    def process_frame(self, image):
         # Expand dimensions since the trained_model expects images to have shape: [1, None, None, 3]
         image_np_expanded = np.expand_dims(image, axis=0)
         # Actual detection.
@@ -45,10 +45,10 @@ class DetectorAPI:
         boxes_list = [None for i in range(boxes.shape[1])]
         for i in range(boxes.shape[1]):
             boxes_list[i] = (
-                int(boxes[0,i,0] * im_height),
-                int(boxes[0,i,1] * im_width),
-                int(boxes[0,i,2] * im_height),
-                int(boxes[0,i,3] * im_width)
+                int(boxes[0, i, 0] * im_height),
+                int(boxes[0, i, 1] * im_width),
+                int(boxes[0, i, 2] * im_height),
+                int(boxes[0, i, 3] * im_width)
             )
 
         return boxes_list, scores[0].tolist(), [int(x) for x in classes[0].tolist()], int(num[0])
@@ -62,7 +62,7 @@ class Detector:
     def __init__(self, stream):
         self.model_path = "./server/model.pb"
         self.odapi = DetectorAPI(path_to_ckpt=self.model_path)
-        self.threshold = 0.8
+        self.threshold = 0.3
         self.stream = stream
        
 
@@ -71,9 +71,9 @@ class Detector:
         r, img = cap.read()
         if img is None:
             return img
-        img = cv2.resize(img, (480, 270))
-       
-        boxes, scores, classes, num = self.odapi.processFrame(img)
+        img = cv2.resize(img, (720, 480))
+
+        boxes, scores, classes, num = self.odapi.process_frame(img)
 
         # Visualization of the results of a detection.
 
@@ -82,17 +82,14 @@ class Detector:
             if classes[i] == 1:
                 if scores[i] > self.threshold:
                     box = boxes[i]
-                    cv2.rectangle(img,(box[1],box[0]),(box[3],box[2]),(255,0,0),2)
-                    print("yes")
-                    
-                    return img
+                    cv2.rectangle(img, (box[1], box[0]), (box[3], box[2]), (255, 0, 0), 2)
+                    return img, True
                 else:
-                    print("no")
-                    
-                    return img
+                    return img, False
            # cv2.imshow("preeview", img) # cv2.destroyWindow("preview")
             
-    def __del__(self):
-        self.cap.release()
-        cv2.destroyAllWindows()
-        requests.get("http://192.168.178.53/stop")
+    #def __del__(self):
+
+        #self.cap.release()
+        #cv2.destroyAllWindows()
+        #requests.get("http://192.168.178.53/stop")

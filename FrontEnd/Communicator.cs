@@ -50,7 +50,7 @@ namespace FrontEnd
 
         static Communicator()
         {
-            client.BaseAddress = new Uri("http://ui.askill.science:8003/");
+            client.BaseAddress = new Uri("http://ui.askill.science:5000/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));

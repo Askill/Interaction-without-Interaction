@@ -2,7 +2,7 @@
     {
       "id": 0,
       "label": "cam1",
-      "ip": "http://208.72.70.171:80/mjpg/video.mjpg",
+      "ip": "http://89.29.108.38:80/mjpg/video.mjpg",
       "client_id": 0,
       "status": true,
       "x":0.2,
