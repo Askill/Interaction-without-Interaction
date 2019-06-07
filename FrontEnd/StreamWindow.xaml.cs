@@ -19,25 +19,38 @@ namespace FrontEnd
     /// </summary>
     public partial class StreamWindow : Window
     {
-        private string _streamUri;
+        private Cam _cam = null;
+        private bool _processed;
         private StreamWindow()
         {
             InitializeComponent();
         }
 
-        public StreamWindow(string streamUri) : this()
+
+        public StreamWindow(Cam cam, bool processed) : this()
         {
-            _streamUri = streamUri;
+            _cam = cam;
+            _processed = processed;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _ = SimpleMJPEGDecoder.StartAsync((BitmapImage img) =>
-              {
-                  imgStream.Dispatcher.Invoke(() => { imgStream.Source = img; });
+            if (_processed)
+            {
+                _ = Task.Run(async () =>
+                  {
+                      var img = await Communicator.GetProcessedCameraImage(_cam);
+                      _ = imgStream.Dispatcher.Invoke(() => { imgStream.Source = img; });
+                  });
+            }
+            else
+            {
+                _ = SimpleMJPEGDecoder.StartAsync((BitmapImage img) =>
+                {
+                    imgStream.Dispatcher.Invoke(() => { imgStream.Source = img; });
 
-              },
-            _streamUri);
+                }, _cam.Ip);
+            }
         }
     }
 }

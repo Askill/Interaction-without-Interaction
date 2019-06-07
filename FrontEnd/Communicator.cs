@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace FrontEnd
 {
@@ -76,6 +78,32 @@ namespace FrontEnd
                 clients = await response.Content.ReadAsAsync<List<Client>>();
             }
             return clients;
+        }
+
+        public static async Task<BitmapImage> GetProcessedCameraImage(Cam cam)
+        {
+            BitmapImage img = null;
+            HttpResponseMessage response = await client.GetAsync($"cam/{cam.Id}/processed");
+            if (response.IsSuccessStatusCode)
+            {
+                byte[] imgData = await response.Content.ReadAsByteArrayAsync();
+                img = BytesToImage(imgData);
+            }
+            return img;
+        }
+
+        public static BitmapImage BytesToImage(byte[] array)
+        {
+            using (var ms = new System.IO.MemoryStream(array))
+            {
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = ms;
+                image.EndInit();
+                image.Freeze();
+                return image;
+            }
         }
     }
 }

@@ -36,7 +36,7 @@ namespace FrontEnd
                 RenderTransform = new RotateTransform(cam.Angle),
                 Width = 32,
                 Height = 32,
-                Tag = cam.Ip,
+                Tag = cam,
                 ToolTip = cam.Label
             };
             img.MouseDown += Cam_MouseDown;
@@ -47,7 +47,11 @@ namespace FrontEnd
 
         private void Cam_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            new StreamWindow(((Image)sender).Tag.ToString()).ShowDialog();
+            var cam = (Cam)((Image)sender).Tag;
+            if (e.LeftButton == MouseButtonState.Pressed)
+                new StreamWindow(cam, false).ShowDialog();
+            else if (e.RightButton == MouseButtonState.Pressed)
+                new StreamWindow(cam, true).ShowDialog();
         }
 
         private void CreateClientMarker(Point pos, Client client)
