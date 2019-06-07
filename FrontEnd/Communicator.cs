@@ -18,6 +18,13 @@ namespace FrontEnd
         public float X { get; set; }
         public float Y { get; set; }
         public float Angle { get; set; }
+
+        override public string ToString()
+        {
+            return $"Id: {Id}, Label: {Label}, Status {Status}\n" +
+                   $"ClientID: {Client_Id}, Ip : {Ip}\n" +
+                   $"X: {X}  Y: {Y}  Angle: {Angle}";
+        }
     }
 
     public class Client
@@ -28,6 +35,13 @@ namespace FrontEnd
         public bool Status { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
+
+        override public string ToString()
+        {
+            return $"Id: {Id}, Label: {Label}, Status {Status}\n" +
+                   $"Ip : {Ip}\n" +
+                   $"X: {X}  Y: {Y}";
+        }
     }
 
     class Communicator

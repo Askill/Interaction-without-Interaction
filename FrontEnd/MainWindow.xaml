@@ -18,10 +18,11 @@
         </Grid.RowDefinitions>
         <Image x:Name="imgMap"  Margin="10" />
         <Canvas x:Name="cnvMap" Margin="10" />
-        
-        <Grid HorizontalAlignment="Left" Height="117" Margin="10" Grid.Row="1" VerticalAlignment="Top" Width="772" Grid.ColumnSpan="2">
-            <TextBox x:Name="txtInfo" HorizontalAlignment="Left" Height="23" Margin="10,48,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="752"/>
+
+        <Grid Margin="0" Grid.Row="1" Grid.ColumnSpan="2">
+            <TextBox x:Name="txtInfo" Margin="10" TextWrapping="Wrap" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
         </Grid>
-        <ListBox x:Name="lstDevices" Grid.Column="1" Margin="10" SelectionChanged="LstDevices_SelectionChanged"/>
+        <ListBox x:Name="lstDevices" Grid.Column="1" Margin="10,37,10,10" SelectionChanged="LstDevices_SelectionChanged"/>
+        <Button x:Name="btnRefresh" Content="Refresh" Grid.Column="1" Margin="10,10,10,0" VerticalAlignment="Top" Click="BtnRefresh_Click"/>
     </Grid>
 </Window>

@@ -20,9 +20,6 @@ namespace FrontEnd
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<Client> _clients;
-        private List<Cam> _cams;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -30,21 +27,22 @@ namespace FrontEnd
             imgMap.Source = img;
         }
 
-        private void CreateCamera(Point pos, double angle, string stream)
+        private void CreateCameraMarker(Point pos, Cam cam)
         {
-            var cam = new Image
+            var img = new Image
             {
-                Source = new BitmapImage(new Uri(@"pack://application:,,,/Images/cam.png")),
+                Source = new BitmapImage(new Uri($@"pack://application:,,,/Images/cam_{(cam.Status ? "green" : "red")}.png")),
                 RenderTransformOrigin = new Point(0.5, 0.5),
-                RenderTransform = new RotateTransform(angle),
+                RenderTransform = new RotateTransform(cam.Angle),
                 Width = 32,
-                Height = 32
+                Height = 32,
+                Tag = cam.Ip,
+                ToolTip = cam.Label
             };
-            cam.MouseDown += Cam_MouseDown;
-            cam.Tag = stream;
-            cnvMap.Children.Add(cam);
-            Canvas.SetLeft(cam, pos.X - cam.Width / 2);
-            Canvas.SetTop(cam, pos.Y - cam.Height / 2);
+            img.MouseDown += Cam_MouseDown;
+            cnvMap.Children.Add(img);
+            Canvas.SetLeft(img, pos.X - img.Width / 2);
+            Canvas.SetTop(img, pos.Y - img.Height / 2);
         }
 
         private void Cam_MouseDown(object sender, MouseButtonEventArgs e)
@@ -52,13 +50,16 @@ namespace FrontEnd
             new StreamWindow(((Image)sender).Tag.ToString()).ShowDialog();
         }
 
-        private void CreateObject(Point pos)
+        private void CreateClientMarker(Point pos, Client client)
         {
             var ellipse = new Ellipse
             {
                 Width = 20,
                 Height = 20,
-                Fill = Brushes.Red
+                Fill = client.Status ? Brushes.Green : Brushes.Red,
+                Stroke = Brushes.Black,
+                StrokeThickness = 1,
+                ToolTip =  client.Label
             };
 
             cnvMap.Children.Add(ellipse);
@@ -68,32 +69,46 @@ namespace FrontEnd
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            LoadInformation();
+        }
+
+        private void LoadInformation()
+        {
+            List<Cam> cams = Task.Run(async () => { return await Communicator.GetCamsAsync(); }).Result;
+            List<Client> clients = Task.Run(async () => { return await Communicator.GetClientsAsync(); }).Result;
+
+            cnvMap.Children.Clear();
             cnvMap.Width = imgMap.ActualWidth;
             cnvMap.Height = imgMap.ActualHeight;
+            lstDevices.Items.Clear();
+            txtInfo.Clear();
 
-            _cams = Task.Run(async () => { return await Communicator.GetCamsAsync(); }).Result;
-            _clients = Task.Run(async () => { return await Communicator.GetClientsAsync(); }).Result;
-
-            foreach (var client in _clients)
+            foreach (var client in clients)
             {
-                CreateObject(new Point(cnvMap.Width * client.X, cnvMap.Height * client.Y));
+                CreateClientMarker(new Point(cnvMap.Width * client.X, cnvMap.Height * client.Y), client);
             }
 
-            foreach (var cam in _cams)
+            foreach (var cam in cams)
             {
-                CreateCamera(new Point(cnvMap.Width * cam.X, cnvMap.Height * cam.Y), cam.Angle, cam.Ip);
-                ListBoxItem item = new ListBoxItem();
-                item.Tag = cam;
-                item.Content = cam.Label;
-                item.FontWeight = FontWeights.Bold;
-                lstDevices.Items.Add(item);
-                foreach (var client in _clients.Where(c => c.Id == cam.Client_Id))
+                CreateCameraMarker(new Point(cnvMap.Width * cam.X, cnvMap.Height * cam.Y), cam);
+
+                ListBoxItem item = new ListBoxItem
                 {
-                    ListBoxItem subitem = new ListBoxItem();
-                    subitem.Tag = client;
-                    subitem.Content = client.Label;
+                    Tag = cam,
+                    Content = cam.Label,
+                    FontWeight = FontWeights.Bold
+                };
+                lstDevices.Items.Add(item);
+
+                foreach (var client in clients.Where(c => c.Id == cam.Client_Id))
+                {
+                    ListBoxItem subitem = new ListBoxItem
+                    {
+                        Tag = client,
+                        Content = client.Label
+                    };
                     lstDevices.Items.Add(subitem);
-                }   
+                }
             }
         }
 
@@ -104,13 +119,18 @@ namespace FrontEnd
             {
                 if (selectedItem.Tag is Client client)
                 {
-                    txtInfo.Text = client.Status.ToString();
+                    txtInfo.Text = client.ToString();
                 }
                 else if (selectedItem.Tag is Cam cam)
                 {
-                    txtInfo.Text = cam.Status.ToString();
+                    txtInfo.Text = cam.ToString();
                 }
             }
+        }
+
+        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoadInformation();
         }
     }
 }
