@@ -115,4 +115,4 @@ if __name__ == '__main__':
     _thread.start_new_thread(main, () )
 
 
-    application.run(host='127.0.0.1', port=80)
+    application.run(host='127.0.0.1', port=80, threaded=True)
