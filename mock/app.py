@@ -67,4 +67,4 @@ def cam_stream(num):
 
 if __name__ == '__main__':
     print(clients[0])
-    application.run(host='127.0.0.1', port=80)
+    application.run(host='127.0.0.1', port=80, threaded=True)
