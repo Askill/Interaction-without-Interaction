@@ -26,11 +26,15 @@ class VideoCamera(object):
     
     def get_frame(self):
         success, image = self.video.read()
-        # We are using Motion JPEG, but OpenCV defaults to capture raw images,
-        # so we must encode it into JPEG in order to correctly display the
-        # video stream.
         ret, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
+
+def gen(camera):
+    """Video streaming generator function."""
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 @application.route('/client/')
 def client_list():
@@ -52,16 +56,8 @@ def cam_info(num):
     json = cams[int(num)]
     return jsonify(json)
 
-def gen(camera):
-    """Video streaming generator function."""
-    while True:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
 @application.route('/cam/<num>/stream')
 def cam_stream(num):
-
     return Response(gen(VideoCamera(cams[int(num)]["ip"])),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
