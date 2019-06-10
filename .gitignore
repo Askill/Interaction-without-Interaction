@@ -2,3 +2,5 @@
 *.csproj
 
 FrontEnd/packages\.config
+
+server/__pycache__/

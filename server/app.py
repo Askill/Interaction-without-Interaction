@@ -48,6 +48,7 @@ def gen(camera):
 #########           ###########
 
 def main():
+    detector = dt.Detector()
     while True:
         for cam in cams:
             t = 1  # seconds a person can leave the room for
@@ -55,7 +56,7 @@ def main():
             time.clock()    
             elapsed = 0
             stream = cam["ip"]
-            detector = dt.Detector(stream)
+            
             clientStatus = clients[cam["client_id"]]["status"]
             clientIp = clients[cam["client_id"]]["ip"]
 
@@ -70,7 +71,7 @@ def main():
                     print("request error")
 
             tmp = time.time()
-            img, result = detector.detect() 
+            img, result = detector.detect(stream) 
             print(cam["client_id"], result, time.time()-tmp)
             lastImages[cam["id"]] = img
 

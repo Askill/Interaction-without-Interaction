@@ -59,15 +59,13 @@ class DetectorAPI:
 
 
 class Detector:
-    def __init__(self, stream):
+    def __init__(self):
         self.model_path = "./server/model.pb"
         self.odapi = DetectorAPI(path_to_ckpt=self.model_path)
-        self.threshold = 0.3
-        self.stream = stream
-       
+        self.threshold = 0.3       
 
-    def detect(self):
-        cap = cv2.VideoCapture(self.stream)
+    def detect(self, stream):
+        cap = cv2.VideoCapture(stream)
         r, img = cap.read()
         if img is None:
             return img
