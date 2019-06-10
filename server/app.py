@@ -42,6 +42,13 @@ def gen(camera):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+def gen_processed(num):
+    """Video streaming generator function."""
+    while True:
+        frame = cv2.imencode('.jpg', lastImages[int(num)])[1].tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
 #########           ###########
 ###         Core            ###
 #########           ###########
@@ -112,8 +119,9 @@ def cam_stream(num):
 
 @application.route('/cam/<num>/processed')
 def cam_stream_processed(num):
-    frame = cv2.imencode('.jpg', lastImages[int(num)])[1]
-    return send_file(io.BytesIO(frame), mimetype='image/jpeg')
+    #frame = cv2.imencode('.jpg', lastImages[int(num)])[1]
+    #return send_file(io.BytesIO(frame), mimetype='image/jpeg')
+    return Response(gen_processed(num), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 #########           ###########
