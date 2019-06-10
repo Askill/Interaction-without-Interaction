@@ -66,14 +66,13 @@ class Detector:
 
     def detect(self, stream):
         cap = cv2.VideoCapture(stream)
+        img = None
         r, img = cap.read()
         if img is None:
             return img
         img = cv2.resize(img, (720, 480))
 
         boxes, scores, classes, num = self.odapi.process_frame(img)
-
-        # Visualization of the results of a detection.
 
         for i in range(len(boxes)):
             # Class 1 represents human
@@ -84,7 +83,7 @@ class Detector:
                     return img, True
                 else:
                     return img, False
-           # cv2.imshow("preeview", img) # cv2.destroyWindow("preview")
+
             
     #def __del__(self):
 

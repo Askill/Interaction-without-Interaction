@@ -4,7 +4,7 @@
     "label": "cam1",
     "ip": "http://89.29.108.38:80/mjpg/video.mjpg",
     "client_id": 0,
-    "status": true,
+    "status": false,
     "x":0.2,
     "y":0.8,
     "angle": 130
@@ -24,7 +24,7 @@
     "label": "cam3",
     "ip": "http://62.99.80.154:81/mjpg/video.mjpg",
     "client_id": 2,
-    "status": true,
+    "status": false,
     "x":0.9,
     "y":0.1,
     "angle": 270

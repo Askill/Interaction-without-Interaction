@@ -2,15 +2,15 @@
   {
     "id": 0,
     "label": "name1",
-    "ip": "http://127.0.0.2",
-    "status": true,
+    "ip": "",
+    "status": false,
     "x":0.11,
     "y":0.8
   },
   {
     "id": 1,
     "label": "name2",
-    "ip": "http://127.0.0.2",
+    "ip": "http://127.0.0.1:81",
     "status": false,
     "x":0.3,
     "y":0.3
@@ -18,8 +18,8 @@
   {
     "id": 2,
     "label": "name3",
-    "ip": "http://127.0.0.2",
-    "status": true,
+    "ip": "",
+    "status": false,
     "x":0.5,
     "y":0.6
   }

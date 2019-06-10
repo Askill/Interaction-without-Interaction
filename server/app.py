@@ -5,8 +5,7 @@ import requests
 import detector as dt
 import cv2
 import _thread
-import copy
-from flask import Flask, jsonify, Response, make_response, send_file
+from flask import Flask, jsonify, Response, send_file
 
 #########           ###########
 ###         Init            ###
@@ -49,12 +48,13 @@ def gen(camera):
 
 def main():
     detector = dt.Detector()
+    t = 1  # seconds a person can leave the room for
+    t0 = time.time()   
+    elapsed = 0
+
     while True:
         for cam in cams:
-            t = 1  # seconds a person can leave the room for
-            t0 = time.time()
-            time.clock()    
-            elapsed = 0
+            
             stream = cam["ip"]
             
             clientStatus = clients[cam["client_id"]]["status"]
@@ -63,10 +63,10 @@ def main():
             elapsed = time.time() - t0
             if elapsed > t and clientStatus:
                 try:    
-                    #r = requests.get(clientIp + "/stop")
-                    #if r.status_code == 200:
-                    clients[cam["client_id"]]["status"] = False
-                    cam["status"] = False
+                    r = requests.get(clientIp + "/stop")
+                    if r.status_code == 200:
+                        clients[cam["client_id"]]["status"] = False
+                        cam["status"] = False
                 except:
                     print("request error")
 
@@ -77,11 +77,11 @@ def main():
 
             if result and not clientStatus:
                 try:      
-                    #r = requests.get(clientIp + "/play")
-                    #if r.status_code == 200:
-                    clients[cam["client_id"]]["status"] = True
-                    cam["status"] = True
-                    t0 = time.time()
+                    r = requests.get(clientIp + "/play")
+                    if r.status_code == 200:
+                        clients[cam["client_id"]]["status"] = True
+                        cam["status"] = True
+                        t0 = time.time()
                 except:
                     print("request error")
 
