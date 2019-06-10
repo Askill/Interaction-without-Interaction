@@ -4,3 +4,7 @@
 FrontEnd/packages\.config
 
 server/__pycache__/
+
+/.vscode
+
+/__pychache__
