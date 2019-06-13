@@ -16,10 +16,10 @@ application = Flask(__name__)
 clients = []
 cams = []
 lastImages = list(range(0,4))
-with open("./server/clients.json", 'r', encoding='utf-8') as f:
+with open("./clients.json", 'r', encoding='utf-8') as f:
     clients = json.loads(f.read())
 
-with open("./server/cams.json", 'r', encoding='utf-8') as f:
+with open("./cams.json", 'r', encoding='utf-8') as f:
     cams = json.loads(f.read())
 
 class VideoCamera(object):
@@ -78,7 +78,10 @@ def main():
                     print("request error")
 
             tmp = time.time()
-            img, result = detector.detect(stream) 
+            try:
+                img, result = detector.detect(stream) 
+            except:
+                continue
             print(cam["client_id"], result, time.time()-tmp)
             lastImages[cam["id"]] = img
 

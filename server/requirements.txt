@@ -2,3 +2,5 @@ requests
 flask
 gunicorn
 opencv-python
+tensorflow
+numpy
