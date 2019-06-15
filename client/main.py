@@ -22,10 +22,10 @@ def index():
 def test():
     global playing, p
     if playing:
-        return 200
-    else:
         playing = False
         p.stop()
+        return 200
+    else:
         return 406
 
 
