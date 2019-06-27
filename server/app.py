@@ -87,12 +87,13 @@ def main():
 
             if detected:
                 cam["status"] = True
+                cam["last_detection"] = time.time()
                 if not clientStatus:
                     try:      
                         r = requests.get(clientIp + "/play")
                         if r.status_code == 200:
                             clients[cam["client_id"]]["status"] = True
-                            cam["last_detection"] = time.time()
+                            
                     except:
                         print("request error")
             else:

@@ -16,27 +16,27 @@
     "client_id": 2,
     "status": false,
     "x":0.4,
-    "y":0.2,
+    "y":0.7,
     "angle": 190
   },
   {
-    "id": 3,
+    "id": 2,
     "label": "cam4",
     "ip": "http://82.150.206.177/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
     "client_id": 1,
     "status": false,
-    "x":0.75,
-    "y":0.4,
-    "angle": 100
+    "x":0.7,
+    "y":0.2,
+    "angle": 210
   },
   {
-    "id": 4,
+    "id": 3,
     "label": "cam5",
     "ip": "http://79.189.131.176:99/videostream.cgi?user=admin&pwd=",
     "client_id": 2,
     "status": false,
-    "x":0.8,
-    "y":0.8,
-    "angle": 90
+    "x":0.2,
+    "y":0.1,
+    "angle": 160
   }
 ]

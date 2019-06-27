@@ -4,23 +4,23 @@
     "label": "name1",
     "ip": "",
     "status": false,
-    "x":0.11,
-    "y":0.8
+    "x":0.3,
+    "y":0.25
   },
   {
     "id": 1,
     "label": "name2",
     "ip": "http://127.0.0.1:81",
     "status": false,
-    "x":0.3,
-    "y":0.3
+    "x":0.48,
+    "y":0.4
   },
   {
     "id": 2,
     "label": "name3",
     "ip": "",
     "status": false,
-    "x":0.5,
-    "y":0.6
+    "x":0.38,
+    "y":0.9
   }
 ]
