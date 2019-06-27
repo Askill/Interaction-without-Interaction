@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -90,6 +90,11 @@ namespace FrontEnd
                 img = BytesToImage(imgData);
             }
             return img;
+        }
+
+        public static string GetProcessedCameraAddress(Cam cam)
+        {
+            return $"{client.BaseAddress.AbsoluteUri}cam/{cam.Id}/processed";
         }
 
         public static BitmapImage BytesToImage(byte[] array)
