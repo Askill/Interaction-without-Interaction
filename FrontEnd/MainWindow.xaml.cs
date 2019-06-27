@@ -40,9 +40,20 @@ namespace FrontEnd
                 ToolTip = cam.Label
             };
             img.MouseDown += Cam_MouseDown;
+            img.MouseEnter += Img_MouseEnter;
             cnvMap.Children.Add(img);
             Canvas.SetLeft(img, pos.X - img.Width / 2);
             Canvas.SetTop(img, pos.Y - img.Height / 2);
+        }
+
+        private void Img_MouseEnter(object sender, MouseEventArgs e)
+        {
+            var cam = (Cam)((Image)sender).Tag;
+            var newSelection = from ListBoxItem item in lstDevices.Items
+                               where cam.Label.Equals(item.Content)
+                               select item;
+            if (newSelection.Any())
+                lstDevices.SelectedItem = newSelection.First();
         }
 
         private void Cam_MouseDown(object sender, MouseButtonEventArgs e)
@@ -63,12 +74,23 @@ namespace FrontEnd
                 Fill = client.Status ? Brushes.Green : Brushes.Red,
                 Stroke = Brushes.Black,
                 StrokeThickness = 1,
-                ToolTip = client.Label
+                ToolTip = client.Label,
+                Tag = client
             };
-
+            ellipse.MouseEnter += Ellipse_MouseEnter;
             cnvMap.Children.Add(ellipse);
             Canvas.SetLeft(ellipse, pos.X - ellipse.Width / 2);
             Canvas.SetTop(ellipse, pos.Y - ellipse.Height / 2);
+        }
+        
+        private void Ellipse_MouseEnter(object sender, MouseEventArgs e)
+        {
+            var client = (Client)((Ellipse)sender).Tag;
+            var newSelection = from ListBoxItem item in lstDevices.Items
+                               where client.Label.Equals(item.Content)
+                               select item;
+            if (newSelection.Any())
+                lstDevices.SelectedItem = newSelection.First();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -83,6 +105,7 @@ namespace FrontEnd
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             var selectedItem = (ListBoxItem)lstDevices.SelectedItem;
+            LoadInformation();
             if (selectedItem != null)
             {
                 var newSelection = from ListBoxItem item in lstDevices.Items
