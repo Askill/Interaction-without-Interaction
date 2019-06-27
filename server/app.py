@@ -55,49 +55,48 @@ def gen_processed(num):
 
 def main():
     detector = dt.Detector()
-    t = 5  # seconds a person can leave the room for
-    t0 = time.time()   
-    elapsed = 0
+    max_absence_time = 5  # seconds a person can leave the room for
+
+    for cam in cams:
+        cam["last_detection"] = 0
 
     while True:
-        cam = cams[2]
-
+        for cam in cams:
+            stream = cam["ip"]
             
-        stream = cam["ip"]
-        
-        clientStatus = clients[cam["client_id"]]["status"]
-        clientIp = clients[cam["client_id"]]["ip"]
+            clientStatus = clients[cam["client_id"]]["status"]
+            clientIp = clients[cam["client_id"]]["ip"]
 
-        elapsed = time.time() - t0
-        if elapsed > t and clientStatus:
-            try:    
-                r = requests.get(clientIp + "/stop")
-                #if r.status_code == 200:
-                clients[cam["client_id"]]["status"] = False
-            except:
-                print("request error")
-
-        tmp = time.time()
-        try:
-            img, result = detector.detect(stream) 
-        except:
-            continue
-
-        print(cam["id"], result, time.time()-tmp)
-        lastImages[cam["id"]] = img
-
-        if result:
-            cam["status"] = True
-            if not clientStatus:
-                try:      
-                    r = requests.get(clientIp + "/play")
-                    if r.status_code == 200:
-                        clients[cam["client_id"]]["status"] = True
-                        t0 = time.time()
+            elapsed = time.time() - cam["last_detection"]
+            if elapsed > max_absence_time and clientStatus:
+                try:    
+                    r = requests.get(clientIp + "/stop")
+                    #if r.status_code == 200:
+                    clients[cam["client_id"]]["status"] = False
                 except:
                     print("request error")
-        else:
-            cam["status"] = False
+
+            tmp = time.time()
+            try:
+                img, detected = detector.detect(stream) 
+            except:
+                continue
+
+            print(cam["id"], detected, time.time()-tmp)
+            lastImages[cam["id"]] = img
+
+            if detected:
+                cam["status"] = True
+                if not clientStatus:
+                    try:      
+                        r = requests.get(clientIp + "/play")
+                        if r.status_code == 200:
+                            clients[cam["client_id"]]["status"] = True
+                            cam["last_detection"] = time.time()
+                    except:
+                        print("request error")
+            else:
+                cam["status"] = False
 
 
 #########           ###########
