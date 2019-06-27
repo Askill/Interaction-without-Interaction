@@ -35,22 +35,23 @@ namespace FrontEnd
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (_processed)
-            {
-                _ = Task.Run(async () =>
-                  {
-                      var img = await Communicator.GetProcessedCameraImage(_cam);
-                      _ = imgStream.Dispatcher.Invoke(() => { imgStream.Source = img; });
-                  });
-            }
-            else
-            {
-                _ = SimpleMJPEGDecoder.StartAsync((BitmapImage img) =>
-                {
-                    imgStream.Dispatcher.Invoke(() => { imgStream.Source = img; });
+            string steamAddr = _processed ? Communicator.GetProcessedCameraAddress(_cam) : _cam.Ip;
 
-                }, _cam.Ip);
-            }
+            //if (_processed)
+            //{
+            //    _ = Task.Run(async () =>
+            //      {
+            //          var img = await Communicator.GetProcessedCameraImage(_cam);
+            //          imgStream.Dispatcher.Invoke(() => { imgStream.Source = img; });
+            //      });
+            //}
+            //else
+
+            _ = SimpleMJPEGDecoder.StartAsync((BitmapImage img) =>
+            {
+                imgStream.Dispatcher.Invoke(() => { imgStream.Source = img; });
+
+            }, steamAddr);
         }
     }
 }
