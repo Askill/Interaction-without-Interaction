@@ -12,11 +12,11 @@ playing = False
 def index():
     global playing, p, w
     if playing:
-        return 406
+        return str(406)
     else:
         playing = True
         p = w.play()
-        return 200
+        return str(200)
 
 @app.route('/stop')
 def test():
@@ -24,9 +24,9 @@ def test():
     if playing:
         playing = False
         p.stop()
-        return 200
+        return str(200)
     else:
-        return 406
+        return str(406)
 
 
 port = int(os.environ.get('PORT', 81))

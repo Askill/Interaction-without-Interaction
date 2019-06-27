@@ -62,7 +62,7 @@ class Detector:
     def __init__(self):
         self.model_path = "./model.pb"
         self.odapi = DetectorAPI(path_to_ckpt=self.model_path)
-        self.threshold = 0.7       
+        self.threshold = 0.6       
 
     def detect(self, stream):
         cap = cv2.VideoCapture(stream)
@@ -70,7 +70,13 @@ class Detector:
         r, img = cap.read()
         if img is None:
             return img
-        img = cv2.resize(img, (1000, 543))
+
+        scale_percent = 60 # percent of original size
+        width = int(img.shape[1] * scale_percent / 100)
+        height = int(img.shape[0] * scale_percent / 100)
+        dim = (width, height)
+
+        img = cv2.resize(img, dim)
 
         boxes, scores, classes, num = self.odapi.process_frame(img)
         res = False
@@ -81,9 +87,12 @@ class Detector:
                     box = boxes[i]
                     cv2.rectangle(img, (box[1], box[0]), (box[3], box[2]), (255, 0, 0), 2)
                     res = True
+                    return img, res
                 else:
                     res = False
-        return img, res
+                    return img, res
+
+        
             
     #def __del__(self):
 

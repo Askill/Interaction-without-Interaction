@@ -15,7 +15,7 @@ application = Flask(__name__)
 
 clients = []
 cams = []
-lastImages = list(range(0,4))
+lastImages = list(range(0,10))
 with open("./clients.json", 'r', encoding='utf-8') as f:
     clients = json.loads(f.read())
 
@@ -55,45 +55,49 @@ def gen_processed(num):
 
 def main():
     detector = dt.Detector()
-    t = 1  # seconds a person can leave the room for
+    t = 5  # seconds a person can leave the room for
     t0 = time.time()   
     elapsed = 0
 
     while True:
-        for cam in cams:
-            
-            stream = cam["ip"]
-            
-            clientStatus = clients[cam["client_id"]]["status"]
-            clientIp = clients[cam["client_id"]]["ip"]
+        cam = cams[2]
 
-            elapsed = time.time() - t0
-            if elapsed > t and clientStatus:
-                try:    
-                    r = requests.get(clientIp + "/stop")
-                    if r.status_code == 200:
-                        clients[cam["client_id"]]["status"] = False
-                        cam["status"] = False
-                except:
-                    print("request error")
+            
+        stream = cam["ip"]
+        
+        clientStatus = clients[cam["client_id"]]["status"]
+        clientIp = clients[cam["client_id"]]["ip"]
 
-            tmp = time.time()
-            try:
-                img, result = detector.detect(stream) 
+        elapsed = time.time() - t0
+        if elapsed > t and clientStatus:
+            try:    
+                r = requests.get(clientIp + "/stop")
+                #if r.status_code == 200:
+                clients[cam["client_id"]]["status"] = False
             except:
-                continue
-            print(cam["client_id"], result, time.time()-tmp)
-            lastImages[cam["id"]] = img
+                print("request error")
 
-            if result and not clientStatus:
+        tmp = time.time()
+        try:
+            img, result = detector.detect(stream) 
+        except:
+            continue
+
+        print(cam["id"], result, time.time()-tmp)
+        lastImages[cam["id"]] = img
+
+        if result:
+            cam["status"] = True
+            if not clientStatus:
                 try:      
                     r = requests.get(clientIp + "/play")
                     if r.status_code == 200:
                         clients[cam["client_id"]]["status"] = True
-                        cam["status"] = True
                         t0 = time.time()
                 except:
                     print("request error")
+        else:
+            cam["status"] = False
 
 
 #########           ###########
