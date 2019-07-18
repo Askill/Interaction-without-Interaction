@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace FrontEnd
 {
+    /// <summary>
+    /// Class to represent the JSON cam object returned by the central web service.
+    /// </summary>
     public class Cam
     {
         public int Id { get; set; }
@@ -29,6 +29,9 @@ namespace FrontEnd
         }
     }
 
+    /// <summary>
+    /// Class to represent the JSON client object returned by the central web service.
+    /// </summary>
     public class Client
     {
         public int Id { get; set; }
@@ -46,6 +49,13 @@ namespace FrontEnd
         }
     }
 
+    /// <summary>
+    /// Class to communicate with the central web service:
+    /// <list type="bullet">
+    /// <item><description>retrieves and deserializes JSON objects to <seealso cref="Client"/> and <seealso cref="Cam"/> objects,</description></item>
+    /// <item><description>retrieves images</description></item>
+    /// </list>
+    /// </summary>
     class Communicator
     {
         static private HttpClient client = new HttpClient();
@@ -92,11 +102,19 @@ namespace FrontEnd
             return img;
         }
 
+        /// <summary>
+        /// Returns the url to the processed camera stream.
+        /// </summary>
         public static string GetProcessedCameraAddress(Cam cam)
         {
             return $"{client.BaseAddress.AbsoluteUri}cam/{cam.Id}/processed";
         }
 
+        /// <summary>
+        /// Converts a byte array to a bitmap image.
+        /// </summary>
+        /// <param name="array">byte array representing an image</param>
+        /// <returns>converted Image</returns>
         public static BitmapImage BytesToImage(byte[] array)
         {
             using (var ms = new System.IO.MemoryStream(array))

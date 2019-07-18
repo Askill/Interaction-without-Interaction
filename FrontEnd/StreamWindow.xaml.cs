@@ -26,7 +26,6 @@ namespace FrontEnd
             InitializeComponent();
         }
 
-
         public StreamWindow(Cam cam, bool processed) : this()
         {
             _cam = cam;
@@ -35,8 +34,10 @@ namespace FrontEnd
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // Check if we want the original or processed stream.
             string steamAddr = _processed ? Communicator.GetProcessedCameraAddress(_cam) : _cam.Ip;
 
+            // // retrieve single image
             //if (_processed)
             //{
             //    _ = Task.Run(async () =>
@@ -47,6 +48,7 @@ namespace FrontEnd
             //}
             //else
 
+            // Show stream in image control.
             _ = SimpleMJPEGDecoder.StartAsync((BitmapImage img) =>
             {
                 imgStream.Dispatcher.Invoke(() => { imgStream.Source = img; });
