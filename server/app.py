@@ -13,6 +13,7 @@ from flask import Flask, jsonify, Response, send_file
 
 application = Flask(__name__)
 
+# init the "database"
 clients = []
 cams = []
 lastImages = list(range(0,10))
@@ -22,6 +23,7 @@ with open("./clients.json", 'r', encoding='utf-8') as f:
 with open("./cams.json", 'r', encoding='utf-8') as f:
     cams = json.loads(f.read())
 
+# provides th function used for the live streams
 class VideoCamera(object):
     """Video stream object"""
     def __init__(self, url):
@@ -60,6 +62,7 @@ def main():
     for cam in cams:
         cam["last_detection"] = 0
 
+    # check all camers sequentially while the server is running
     while True:
         for cam in cams:
             stream = cam["ip"]
@@ -126,10 +129,7 @@ def cam_stream(num):
 
 @application.route('/cam/<num>/processed')
 def cam_stream_processed(num):
-    #frame = cv2.imencode('.jpg', lastImages[int(num)])[1]
-    #return send_file(io.BytesIO(frame), mimetype='image/jpeg')
     return Response(gen_processed(num), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 
 #########           ###########
 ###         Start           ###
@@ -138,5 +138,4 @@ def cam_stream_processed(num):
 if __name__ == '__main__':
 
     _thread.start_new_thread(main, () )
-
     application.run(host='0.0.0.0', port=5000, threaded=True)

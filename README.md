@@ -31,3 +31,5 @@ Pfad | Beschreibung
 ### Architektur
 
 ![Architektur Übersicht](arch.png)
+
+Es wurden nur die Komponenten mit einer soliden Umrandung umgesetzt.
