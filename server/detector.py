@@ -6,7 +6,8 @@ import numpy as np
 import tensorflow as tf
 import cv2
 
-
+# Detector API can be changed out given the I/O remains the same
+# this way you can use a different N-Net if you like to
 class DetectorAPI:
     def __init__(self, path_to_ckpt):
         self.path_to_ckpt = path_to_ckpt
@@ -70,7 +71,7 @@ class Detector:
         r, img = cap.read()
         if img is None:
             return img
-
+        # scale the image down for faster processing
         scale_percent = 60 # percent of original size
         width = int(img.shape[1] * scale_percent / 100)
         height = int(img.shape[0] * scale_percent / 100)
@@ -78,10 +79,12 @@ class Detector:
 
         img = cv2.resize(img, dim)
 
+        # get the results from the net
         boxes, scores, classes, num = self.odapi.process_frame(img)
         res = False
         for i in range(len(boxes)):
             # Class 1 represents human
+            # draw recogniction boxes and return resulting image + true/false
             if classes[i] == 1:
                 if scores[i] > self.threshold:
                     box = boxes[i]
@@ -92,10 +95,3 @@ class Detector:
                     res = False
                     return img, res
 
-        
-            
-    #def __del__(self):
-
-        #self.cap.release()
-        #cv2.destroyAllWindows()
-        #requests.get("http://192.168.178.53/stop")
