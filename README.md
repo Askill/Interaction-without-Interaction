@@ -1,7 +1,7 @@
 # IoI Interaktion ohne Interaktion 
 ##### (Demo)
 
-Dieses Projekt enthält alle Komponenten eines Systems zu überwachung und Analyse mehrerer Videostreams und der Steuerung von Geräten auf Basis der Analyse.
+Dieses Projekt enthält alle Komponenten eines Systems zu überwachung und Analyse mehrerer Videostreams mit einem Neuronalen Netzes und der Steuerung von Geräten auf Basis der Analyse.
 
 ### Struktur:
 Pfad | Beschreibung
